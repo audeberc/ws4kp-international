@@ -174,9 +174,137 @@ const normalizeTargets = (targetList) => (targetList ?? [])
 	// guided bombs are not shown (same as the source site)
 	.filter((t) => !t.type.startsWith('kab'));
 
+// ---- NEPTUN (neptun.in.ua) ----
+// Ukrainian -> Latin (official KMU 2010 transliteration), the Star4000 fonts have no Cyrillic
+const TRANSLIT = {
+	а: 'a',
+	б: 'b',
+	в: 'v',
+	г: 'h',
+	ґ: 'g',
+	д: 'd',
+	е: 'e',
+	є: 'ie',
+	ж: 'zh',
+	з: 'z',
+	и: 'y',
+	і: 'i',
+	ї: 'i',
+	й: 'i',
+	к: 'k',
+	л: 'l',
+	м: 'm',
+	н: 'n',
+	о: 'o',
+	п: 'p',
+	р: 'r',
+	с: 's',
+	т: 't',
+	у: 'u',
+	ф: 'f',
+	х: 'kh',
+	ц: 'ts',
+	ч: 'ch',
+	ш: 'sh',
+	щ: 'shch',
+	ь: '',
+	ю: 'iu',
+	я: 'ia',
+	ы: 'y',
+	э: 'e',
+	ё: 'io',
+	ъ: '',
+};
+// at the start of a word
+const TRANSLIT_INITIAL = {
+	є: 'ye', ї: 'yi', й: 'y', ю: 'yu', я: 'ya',
+};
+
+const transliterate = (text) => {
+	const chars = [...String(text ?? '').replace(/зг/gi, (m) => (m[0] === 'З' ? 'Zgh' : 'zgh'))];
+	return chars.map((ch, i) => {
+		const lower = ch.toLowerCase();
+		if (!(lower in TRANSLIT)) return /['’ʼ`ʼ]/.test(ch) ? '' : ch;
+		const initial = i === 0 || !/[\p{L}'’ʼ`ʼ]/u.test(chars[i - 1]);
+		const out = (initial && TRANSLIT_INITIAL[lower]) || TRANSLIT[lower];
+		return ch !== lower && out ? out[0].toUpperCase() + out.slice(1) : out;
+	}).join('');
+};
+
+// NEPTUN type -> map class (same classes as war-monitor targets)
+const NEPTUN_CLASS = {
+	uav: 'uav', fpv: 'uav', recon: 'uav', missile: 'cruise', ballistic: 'ballistic', mig31k: 'aviation', kab: 'kab', unknown: 'unknown',
+};
+// NEPTUN type -> threat type vocabulary (alerts.in.ua names)
+const NEPTUN_THREAT = {
+	uav: 'drones', fpv: 'drones', recon: 'drones', missile: 'cruise_missiles', ballistic: 'ballistic_missiles', kab: 'guided_aerial_bombs', mig31k: 'mig31k_departure',
+};
+
+const neptunOblastId = (t) => oblastNames[simpleName(t?.region)] ?? oblastNames[simpleName(t?.oblast)];
+
+// NEPTUN threats (WebSocket / REST) -> compact list for the map
+const normalizeNeptunTargets = (threatList) => (threatList ?? [])
+	.filter((t) => t && t.status !== 'resolved' && Number.isFinite(Number(t.lat)) && Number.isFinite(Number(t.lon)))
+	.map((t) => {
+		const type = String(t.type ?? 'unknown');
+		const areaOnly = !!t.areaOnly;
+		const heading = t.velocity?.bearingDeg ?? t.heading;
+		return {
+			id: String(t.id),
+			type,
+			cls: NEPTUN_CLASS[type] ?? 'unknown',
+			lat: Number(t.lat),
+			lon: Number(t.lon),
+			// area-only records sit on the oblast centroid: no course, no trail (NEPTUN API rules)
+			heading: !areaOnly && Number.isFinite(Number(heading)) && heading !== null ? Number(heading) : null,
+			n: Math.max(1, Number(t.count) || 1),
+			trail: areaOnly ? [] : (t.trail ?? [])
+				.filter((p) => Number.isFinite(Number(p?.lat)) && Number.isFinite(Number(p?.lon)))
+				.map((p) => [Number(p.lat), Number(p.lon)])
+				.slice(-8),
+			dest: null,
+			place: transliterate(areaOnly ? '' : (t.locality || t.district || '')),
+			oblast: neptunOblastId(t) ?? null,
+			// "курсом на X": locality is where it is heading, not where it is
+			toward: !!t.destination,
+			// advisory = an observation (e.g. MiG-31K take-off over a calm country), shown calmly
+			advisory: !!t.advisory,
+			areaOnly,
+			stale: t.status === 'stale' || !!t.advisory,
+		};
+	})
+	// guided bombs are not shown on the map (same as war-monitor targets)
+	.filter((t) => t.cls !== 'kab');
+
+// NEPTUN threats -> { oblastId: [threat types] }, merged into alerted oblasts like alerts.in.ua
+const neptunThreats = (threatList) => {
+	const byOblast = {};
+	(threatList ?? []).forEach((t) => {
+		if (!t || t.status === 'resolved' || t.status === 'stale') return;
+		const threat = NEPTUN_THREAT[t.type];
+		const oblastId = neptunOblastId(t);
+		if (!threat || !oblastId) return;
+		byOblast[oblastId] = sortThreats([...(byOblast[oblastId] ?? []), threat]);
+	});
+	return byOblast;
+};
+
+// union of several { oblastId: [threats] } maps
+const combineThreats = (...maps) => {
+	const out = {};
+	maps.filter(Boolean).forEach((m) => Object.entries(m).forEach(([id, list]) => {
+		out[id] = sortThreats([...(out[id] ?? []), ...list]);
+	}));
+	return out;
+};
+
 export {
 	normalizeAlerts,
 	normalizeTargets,
+	normalizeNeptunTargets,
+	neptunThreats,
+	combineThreats,
+	transliterate,
 	normalizeThreats,
 	mergeThreats,
 	parents,

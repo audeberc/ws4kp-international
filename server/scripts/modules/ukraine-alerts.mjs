@@ -313,9 +313,15 @@ class UkraineAlerts extends WeatherDisplay {
 		const status = this.elem.querySelector('.update-status');
 		status.textContent = this.data.stale ? `STALE ${updated}` : `Updated ${updated}`;
 		status.classList.toggle('stale', !!this.data.stale);
+		// NEPTUN API terms require a visible credit next to the map whenever its data is used
+		const threatsFrom = String(this.data.threatsSource ?? '');
+		const usesNeptun = this.data.targetsSource === 'neptun' || threatsFrom.includes('neptun');
 		const credits = ['Alerts: ukrainealarm.com'];
-		if (this.data.threatsSource === 'alerts.in.ua') credits.push('alerts.in.ua');
-		if (this.data.targets?.length) credits.push('war-monitor.org');
+		if (threatsFrom.includes('alerts.in.ua')) credits.push('alerts.in.ua');
+		if (usesNeptun) credits.push('NEPTUN neptun.in.ua');
+		else if (this.data.targets?.length) credits.push('war-monitor.org');
+		// three credits don't fit next to the status with the "Alerts:" prefix
+		if (credits.length > 2) credits[0] = 'ukrainealarm.com';
 		this.elem.querySelector('.credits').textContent = credits.join('  ');
 
 		this.finishDraw();
@@ -389,7 +395,8 @@ class UkraineAlerts extends WeatherDisplay {
 		const targets = this.data.targets ?? [];
 		const iconScale = 1.5 * unitsPerPx;
 
-		targets.forEach((target) => {
+		// area-only NEPTUN records have no real position (oblast centroid), so they are not drawn
+		targets.filter((target) => !target.areaOnly).forEach((target) => {
 			const [x, y] = project(target.lon, target.lat);
 			const g = svgEl('g', { class: `target target-${target.cls}${target.stale ? ' stale' : ''}` });
 
@@ -561,12 +568,15 @@ class UkraineAlerts extends WeatherDisplay {
 
 		// flying targets heading somewhere (biggest groups first)
 		const targetLines = (this.data.targets ?? [])
-			.filter((t) => !t.stale)
-			.sort((a, b) => b.n - a.n)
+			.filter((t) => !t.stale && !t.advisory)
+			// targets in followed oblasts first, then biggest groups
+			.sort((a, b) => (this.selection.includes(b.oblast) - this.selection.includes(a.oblast)) || b.n - a.n)
 			.slice(0, 1)
 			.map((t) => {
-				const where = t.dest?.place || t.place;
-				return { text: `${t.n > 1 ? `${t.n} ` : ''}${TARGET_TEXT[t.cls]}${where ? ` > ${where}` : ''}`.slice(0, 32), className: 'hazard' };
+				const where = t.dest?.place || t.place || (t.oblast && REGIONS[t.oblast]?.short) || '';
+				// NEPTUN says whether the place is the destination ("toward") or the current position
+				const sep = t.toward === false ? ' @ ' : ' > ';
+				return { text: `${t.n > 1 ? `${t.n} ` : ''}${TARGET_TEXT[t.cls] ?? 'Target'}${where ? `${sep}${where}` : ''}`.slice(0, 32), className: 'hazard' };
 			});
 
 		const extra = [...threatLines, ...targetLines];

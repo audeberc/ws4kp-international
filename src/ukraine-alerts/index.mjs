@@ -8,20 +8,23 @@
 //   UKRAINE_ALERTS_PROVIDER       auto (default) | official | mapupdate
 //   ALERTS_IN_UA_TOKEN            alerts.in.ua token, adds threat types (drones, ballistic...) (optional)
 //   WARMONITOR_API_KEY            operator-granted key for war-monitor.org flying targets (optional)
+//   NEPTUN_ENABLED                1 = flying targets + threat types from the open NEPTUN stream (neptun.in.ua, optional)
+//   NEPTUN_STREAM_URL             override the NEPTUN stream (default wss://neptun.in.ua/api/v1/stream?v=2)
 //   UKRAINE_ALERTS_HISTORY_FILE   where history is saved (default data/ukraine-alerts-history.json)
 //   UKRAINE_ALERTS_ALWAYS_POLL    1 = keep polling (and recording history) even when no display is open
-//   UKRAINE_ALERTS_FIXTURE        path to a JSON file { alerts, threats, targets, history } served instead of live data
+//   UKRAINE_ALERTS_FIXTURE        path to a JSON file { alerts, threats, targets, neptun, history } served instead of live data
 //   UKRAINE_ALERTS_USER_AGENT     override the User-Agent sent upstream (default "AirWeather/1.0")
 
 import { readFile } from 'node:fs/promises';
 import path from 'node:path';
 import {
-	normalizeAlerts, normalizeTargets, normalizeThreats, mergeThreats,
+	normalizeAlerts, normalizeTargets, normalizeThreats, mergeThreats, normalizeNeptunTargets, neptunThreats, combineThreats,
 } from './normalize.mjs';
 import createOfficialProvider from './providers/official.mjs';
 import createMapUpdateProvider from './providers/mapupdate.mjs';
 import createWarMonitorProvider from './providers/warmonitor.mjs';
 import createAlertsInUaProvider from './providers/alertsinua.mjs';
+import createNeptunProvider from './providers/neptun.mjs';
 import createHistory, { mergeIntervals } from './history.mjs';
 
 const TICK_MS = 2_000;
@@ -45,6 +48,9 @@ const createUkraineAlertsService = (env = process.env) => {
 	const mapUpdate = createMapUpdateProvider({ userAgent });
 	const warMonitor = env.WARMONITOR_API_KEY ? createWarMonitorProvider({ apiKey: env.WARMONITOR_API_KEY, userAgent }) : null;
 	const alertsInUa = env.ALERTS_IN_UA_TOKEN ? createAlertsInUaProvider({ token: env.ALERTS_IN_UA_TOKEN, userAgent }) : null;
+	const neptunOn = ['1', 'true', 'yes'].includes(String(env.NEPTUN_ENABLED ?? '').toLowerCase()) || !!env.NEPTUN_STREAM_URL;
+	const neptun = neptunOn ? createNeptunProvider({ streamUrl: env.NEPTUN_STREAM_URL || undefined, userAgent, log }) : null;
+	// NEPTUN wins for flying targets when both are configured (war-monitor still fills in while NEPTUN has no data)
 	const history = createHistory({
 		file: path.resolve(env.UKRAINE_ALERTS_HISTORY_FILE || 'data/ukraine-alerts-history.json'),
 		userAgent,
@@ -53,8 +59,8 @@ const createUkraineAlertsService = (env = process.env) => {
 	if (mode === 'official' && !official) log('UKRAINE_ALERTS_PROVIDER=official but UKRAINEALARM_API_KEY is not set');
 	log([
 		`alerts: ${fixturePath ? `fixture ${fixturePath}` : mode}${official ? ' (official key set)' : ''}`,
-		`threats: ${alertsInUa ? 'alerts.in.ua' : 'reasons only'}`,
-		`targets: ${warMonitor ? 'war-monitor' : 'off'}`,
+		`threats: ${[alertsInUa && 'alerts.in.ua', neptun && 'neptun'].filter(Boolean).join(' + ') || 'reasons only'}`,
+		`targets: ${[neptun && 'neptun', warMonitor && 'war-monitor'].filter(Boolean).join(', then ') || 'off'}`,
 		`polling: ${alwaysPoll ? 'always' : 'while displays are open'}`,
 	].join('; '));
 
@@ -140,9 +146,24 @@ const createUkraineAlertsService = (env = process.env) => {
 		}
 	};
 
+	// NEPTUN pushes over a socket; normalize only when it changed
+	let neptunVersion = -1;
+	let neptunCache = { targets: [], threats: {} };
+	const neptunData = () => {
+		if (!neptun) return neptunCache;
+		if (neptun.version !== neptunVersion) {
+			neptunVersion = neptun.version;
+			const raw = neptun.threats;
+			neptunCache = { targets: normalizeNeptunTargets(raw), threats: neptunThreats(raw) };
+		}
+		return neptunCache;
+	};
+	const neptunLive = () => !!neptun?.updated && Date.now() - Date.parse(neptun.updated) < STALE_MS;
+
 	const tick = async () => {
 		const now = Date.now();
 		const jobs = [];
+		if (neptun) jobs.push(neptun.tick().catch((e) => log(`neptun failed: ${e.message}`)));
 		const alertProvider = pickAlertProvider();
 		if (alertProvider && now - lastAlertsAttempt >= alertProvider.minIntervalMs) jobs.push(pollAlerts());
 		if (alertsInUa && now - lastThreatsAttempt >= alertsInUa.minIntervalMs) jobs.push(pollThreats());
@@ -153,6 +174,7 @@ const createUkraineAlertsService = (env = process.env) => {
 	const loop = async () => {
 		if (!alwaysPoll && Date.now() - lastRequest > IDLE_MS) {
 			active = false;
+			neptun?.stop();
 			log('idle, polling paused');
 			return;
 		}
@@ -169,7 +191,10 @@ const createUkraineAlertsService = (env = process.env) => {
 		}
 		active = true;
 		log('polling started');
-		firstResult = tick()
+		neptun?.start();
+		// the stream's first snapshot usually lands within a second
+		firstResult = (neptun ? neptun.waitForData(3_000) : Promise.resolve())
+			.then(() => tick())
 			.catch((e) => log(`tick error: ${e.message}`))
 			.then(() => {
 				firstResult = null;
@@ -183,19 +208,22 @@ const createUkraineAlertsService = (env = process.env) => {
 
 	const snapshot = () => {
 		const age = state.updated ? Date.now() - Date.parse(state.updated) : Infinity;
+		const nep = neptunData();
+		const useNeptunTargets = neptun && (neptunLive() || !warMonitor);
+		const threatsSources = [alertsInUa && alertsInUa.name, neptun && neptunLive() && neptun.name].filter(Boolean);
 		return {
 			source: state.source,
 			updated: state.updated,
 			stale: age > STALE_MS,
 			error: state.error,
-			regions: withThreats(state.regions, state.threats),
-			threatsSource: alertsInUa ? alertsInUa.name : null,
-			threatsUpdated: state.threatsUpdated,
+			regions: withThreats(state.regions, combineThreats(state.threats, neptunLive() ? nep.threats : null)),
+			threatsSource: threatsSources.join(', ') || null,
+			threatsUpdated: state.threatsUpdated ?? neptun?.updated ?? null,
 			threatsError: state.threatsError,
-			targets: state.targets,
-			targetsSource: warMonitor ? warMonitor.name : null,
-			targetsUpdated: state.targetsUpdated,
-			targetsError: state.targetsError,
+			targets: useNeptunTargets ? nep.targets : state.targets,
+			targetsSource: (useNeptunTargets && neptun.name) || (warMonitor ? warMonitor.name : null),
+			targetsUpdated: useNeptunTargets ? neptun.updated : state.targetsUpdated,
+			targetsError: useNeptunTargets ? neptun.error : state.targetsError,
 		};
 	};
 
@@ -208,13 +236,13 @@ const createUkraineAlertsService = (env = process.env) => {
 			updated: new Date().toISOString(),
 			stale: !!fixture.stale,
 			error: null,
-			regions: withThreats(normalizeAlerts(fixture.alerts), normalizeThreats(fixture.threats)),
-			threatsSource: fixture.threats ? 'fixture' : null,
+			regions: withThreats(normalizeAlerts(fixture.alerts), combineThreats(normalizeThreats(fixture.threats), neptunThreats(fixture.neptun))),
+			threatsSource: [fixture.threats && 'fixture', fixture.neptun && 'neptun'].filter(Boolean).join(', ') || null,
 			threatsUpdated: fixture.threats ? new Date().toISOString() : null,
 			threatsError: null,
-			targets: normalizeTargets(fixture.targets),
-			targetsSource: fixture.targets ? 'fixture' : null,
-			targetsUpdated: fixture.targets ? new Date().toISOString() : null,
+			targets: fixture.neptun ? normalizeNeptunTargets(fixture.neptun) : normalizeTargets(fixture.targets),
+			targetsSource: (fixture.neptun && 'neptun') || (fixture.targets ? 'fixture' : null),
+			targetsUpdated: fixture.targets || fixture.neptun ? new Date().toISOString() : null,
 			targetsError: null,
 		};
 	};
@@ -286,6 +314,7 @@ const createUkraineAlertsService = (env = process.env) => {
 		if (timer) clearTimeout(timer);
 		timer = null;
 		active = false;
+		neptun?.stop();
 		await history.flush();
 	};
 

@@ -40,7 +40,8 @@ All data is fetched **by this app's server** (`src/ukraine-alerts/`) and cached 
 | Alerts (fallback) | `map.ukrainealarm.com/api/v2/data/mapUpdate` | No key needed, but undocumented and may change. Polled at most every 20 s. Used when there is no key or the official API fails. |
 | Threat types | [alerts.in.ua](https://devs.alerts.in.ua/) | Optional, set `ALERTS_IN_UA_TOKEN` (request a token at https://alerts.in.ua/api-request). Polled every 30 s with `If-Modified-Since`. Without it, threat types come only from ukrainealarm `reason` texts, which are often empty. |
 | History backfill | `map.ukrainealarm.com/api/data/lastAlerts/{oblast}` | The last 20 alarms per followed oblast, refreshed at most every 10 min. Everything after that comes from the server's own recording. |
-| Flying targets | [war-monitor.org](https://map.war-monitor.org/) | **Off by default.** The public map is protected by a human check, and AirWeather does not get around it. Enabled only with an operator-granted key (`WARMONITOR_API_KEY`; ask war_monitor@proton.me). |
+| Flying targets + threat types | [NEPTUN](https://neptun.in.ua/) ([API](https://neptun.in.ua/developers)) | **Off by default**, set `NEPTUN_ENABLED=1`. Open API, no key needed. The server holds **one** WebSocket (`wss://neptun.in.ua/api/v1/stream?v=2`) shared by every display, opened only while displays are open. While the socket is down it falls back to `GET /api/v1/threats` every 15 s (the terms allow at most one call every 5 s). The feed gives UAV/FPV/recon drones, cruise and ballistic missiles and MiG-31K tracks, with the place a track is at (`@`) or heading toward (`>`). Place names are transliterated (KMU 2010). It also adds Drones/Ballistic/… threat types to alerted oblasts, so you get threat types without an alerts.in.ua token. Records that name only an oblast (`areaOnly`) are left off the map, and `advisory` records (e.g. a MiG-31K take-off with no wide alert) are dimmed and kept out of the ticker. **Terms:** NEPTUN requires a visible credit: the alert screen shows "NEPTUN neptun.in.ua" in its footer whenever NEPTUN data is on screen. Do not remove it. NEPTUN is an aggregator of Telegram channels, not an official alert system. |
+| Flying targets (alt.) | [war-monitor.org](https://map.war-monitor.org/) | **Off by default.** The public map is protected by a human check, and AirWeather does not get around it. Enabled only with an operator-granted key (`WARMONITOR_API_KEY`; ask war_monitor@proton.me). |
 | Boundaries | [OCHA COD-AB Ukraine](https://data.humdata.org/dataset/cod-ab-ukr) | Oblasts, raions and hromadas, licence CC BY-IGO. Simplified copies are in `tools/data/`. |
 
 Because the upstreams send no CORS headers, alerts **need the Node server**. The static GitHub Pages build (`docs/`) skips the alert screens.
@@ -51,10 +52,12 @@ Because the upstreams send no CORS headers, alerts **need the Node server**. The
 | `UKRAINEALARM_API_KEY` | – | Official ukrainealarm key |
 | `UKRAINE_ALERTS_PROVIDER` | `auto` | `auto` uses official when a key is set and falls back to mapUpdate. `official` or `mapupdate` forces one source. |
 | `ALERTS_IN_UA_TOKEN` | – | Adds threat types |
-| `WARMONITOR_API_KEY` | – | Turns on the flying-targets layer |
+| `NEPTUN_ENABLED` | – | `1` turns on NEPTUN flying targets and threat types. When `WARMONITOR_API_KEY` is also set, NEPTUN wins and war-monitor is used only while NEPTUN has no fresh data. |
+| `NEPTUN_STREAM_URL` | `wss://neptun.in.ua/api/v1/stream?v=2` | Override the NEPTUN stream (the REST fallback is derived from it) |
+| `WARMONITOR_API_KEY` | – | Turns on the war-monitor flying-targets layer |
 | `UKRAINE_ALERTS_HISTORY_FILE` | `data/ukraine-alerts-history.json` | Where the recorded history is saved (keeps 48 h) |
 | `UKRAINE_ALERTS_ALWAYS_POLL` | – | `1` keeps polling and recording history even when no screen is open. Without it, polling pauses 5 minutes after the last screen closes. |
-| `UKRAINE_ALERTS_FIXTURE` | – | Serve canned data from a JSON file instead of live data (see `test/fixtures/`). The file holds `alerts`, plus optional `threats`, `targets`, `history` and `historyGaps`. |
+| `UKRAINE_ALERTS_FIXTURE` | – | Serve canned data from a JSON file instead of live data (see `test/fixtures/`). The file holds `alerts`, plus optional `threats`, `targets`, `neptun` (raw NEPTUN threat records), `history` and `historyGaps`. |
 | `UKRAINE_ALERTS_USER_AGENT` | `AirWeather/1.0` | User-Agent sent upstream |
 | `WS4KP_PORT` | `8080` | HTTP port |
 
@@ -67,6 +70,8 @@ docker build -t airweather .
 docker run -p 8080:8080 -v airweather-data:/app/data -e UKRAINEALARM_API_KEY=xxxx -e UKRAINE_ALERTS_ALWAYS_POLL=1 airweather
 # try every screen with canned alerts, threats, history and targets
 UKRAINE_ALERTS_FIXTURE=test/fixtures/ukraine-alerts-full.json npm start
+# NEPTUN targets (live: NEPTUN_ENABLED=1 npm start)
+UKRAINE_ALERTS_FIXTURE=test/fixtures/ukraine-alerts-neptun.json npm start
 ```
 
 ### CRT and TV URLs
