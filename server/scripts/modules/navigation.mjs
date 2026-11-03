@@ -396,6 +396,16 @@ const handleNavButton = (button) => {
 // return the specificed display
 const getDisplay = (index) => displays[index];
 
+// interrupt the rotation and show a display right away (used for air raid warnings)
+// returns false when nothing can be shown yet (no location loaded)
+const showDisplayNow = (display) => {
+	if (document.querySelector('#loading')?.style.display !== 'none') return false;
+	progress?.hideCanvas();
+	hideAllCanvases();
+	display.showCanvas(msg.command.firstFrame);
+	return true;
+};
+
 // resize the container on a page resize
 const resize = () => {
 	const targetWidth = settings.wide.value ? 640 + 107 + 107 : 640;
@@ -471,10 +481,39 @@ const AssignLastUpdate = (date) => {
 	}
 };
 
+// weather data failed: keep displays that don't need it (e.g. air raid alerts) running
+const weatherFailed = async (error) => {
+	console.error('Weather data unavailable, showing weather-independent displays only', error);
+	// AirWeather is Ukraine focused: keep the clock on Kyiv time without weather data
+	if (!weatherParameters.timeZone) weatherParameters.timeZone = 'Europe/Kyiv';
+	hideAllCanvases();
+	document.querySelector('#loading').style.display = 'none';
+	displays.forEach((display) => {
+		if (display.independentOfWeather) {
+			display.getData(weatherParameters);
+		} else if (display.enabled) {
+			display.setStatus(STATUS.failed);
+		}
+	});
+	if (progress) {
+		await progress.drawCanvas(displays, countLoadedDisplays());
+		progress.showCanvas();
+	}
+};
+
 const latLonReceived = async (data, haveDataCallback) => {
-	await getWeather(data, haveDataCallback);
-	await getMarineForecast(data, haveDataCallback);
-	await getAirQualityForecast(data, haveDataCallback);
+	try {
+		await getWeather(data, haveDataCallback);
+	} catch (error) {
+		await weatherFailed(error);
+	}
+	// marine and air quality are optional extras
+	try {
+		await getMarineForecast(data, haveDataCallback);
+		await getAirQualityForecast(data, haveDataCallback);
+	} catch (error) {
+		console.error('Marine/air quality data unavailable', error);
+	}
 	AssignLastUpdate(null);
 
 	// We can immediately start playing (auto play),
@@ -546,6 +585,7 @@ export {
 	registerProgress,
 	currentDisplay,
 	getDisplay,
+	showDisplayNow,
 	msg,
 	message,
 	latLonReceived,

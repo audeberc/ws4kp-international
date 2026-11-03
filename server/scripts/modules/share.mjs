@@ -39,6 +39,12 @@ const createLink = async (e) => {
 		}
 	});
 
+	// air raid alert regions (comma separated ukrainealarm region ids)
+	try {
+		const regions = JSON.parse(localStorage.getItem('ukraineAlertRegions') ?? '[]');
+		if (regions.length > 0) queryStringElements.ukraineAlertRegions = regions.join(',');
+	} catch { /* ignore */ }
+
 	// add the location string
 	queryStringElements.latLonQuery = localStorage.getItem('latLonQuery');
 	queryStringElements.latLon = localStorage.getItem('latLon');

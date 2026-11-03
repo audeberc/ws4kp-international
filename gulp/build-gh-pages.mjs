@@ -46,6 +46,8 @@ const mjsSources = [
 	'server/scripts/modules/aqi-forecast.mjs',
 	'server/scripts/modules/customweatherstation.mjs',
 	'server/scripts/modules/progress.mjs',
+	'server/scripts/modules/ukraine-alerts.mjs',
+	'server/scripts/modules/ukraine-alert-history.mjs',
 	'server/scripts/index.mjs',
 ];
 

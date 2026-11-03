@@ -58,6 +58,8 @@
   <script type="module" src="scripts/modules/progress.mjs"></script>
   <script type="module" src="scripts/modules/radar.mjs"></script>
   <script type="module" src="scripts/modules/settings.mjs"></script>
+  <script type="module" src="scripts/modules/ukraine-alerts.mjs"></script>
+  <script type="module" src="scripts/modules/ukraine-alert-history.mjs"></script>
 	<script type="module" src="scripts/index.mjs"></script>
 	<!-- <script type="text/javascript" src="scripts/custom.js"></script> -->
   <!-- data -->
@@ -142,6 +144,12 @@
       <div id="custom-weather-station-html" class="weather-display">
         <%- include('partials/custom-weather-station.ejs') %>
       </div>
+      <div id="ukraine-alerts-html" class="weather-display">
+        <%- include('partials/ukraine-alerts.ejs') %>
+      </div>
+      <div id="ukraine-alert-history-html" class="weather-display">
+        <%- include('partials/ukraine-alert-history.ejs') %>
+      </div>
     </div>
     <div id="divTwcBottom">
       <div id="divTwcBottomLeft">
@@ -197,6 +205,9 @@
         - <a href="https://www.openstreetmap.org/" target="_blank">OpenStreetMap</a><br />
         - <a href="https://www.esri.com/" target="_blank">ESRI</a><br />
         - <a href="https://www.rainviewer.com/api.html" target="_blank">Rainviewer</a><br />
+        - <a href="https://www.ukrainealarm.com/" target="_blank">Ukraine Alarm</a> (air raid alerts)<br />
+        - <a href="https://data.humdata.org/dataset/cod-ab-ukr" target="_blank">OCHA COD-AB</a> (boundaries, CC BY-IGO)<br />
+        - <a href="https://alerts.in.ua/" target="_blank">alerts.in.ua</a> (threat types, optional)<br />
       </div>
     </div>
   </div>
@@ -205,6 +216,11 @@
   <div id='enabledDisplays'>
 
   </div>
+
+	<div class='heading'>Air Raid Alert Regions</div>
+	<div class='info'>Pick the oblasts to follow. The alert map zooms to them and the ticker reports on them. None selected = whole country.</div>
+	<div id='ukraineAlertRegions'></div>
+	<div id='ukraineAlertSettings'></div>
 
 	<div class='heading'>Settings</div>
 	<div id='settings'>

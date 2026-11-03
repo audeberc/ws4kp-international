@@ -57,6 +57,24 @@ const index = (req, res) => {
 	});
 };
 
+// Ukraine air-raid alerts (server side proxy + cache, see src/ukraine-alerts/index.mjs)
+const ukraineAlerts = import('./src/ukraine-alerts/index.mjs')
+	.then((module) => module.default(process.env))
+	.catch((err) => {
+		console.error('Failed to load ukraine-alerts:', err);
+		return null;
+	});
+const withUkraineAlerts = (method) => async (req, res) => {
+	const service = await ukraineAlerts;
+	if (!service) {
+		res.status(503).json({ error: 'ukraine-alerts service unavailable' });
+		return;
+	}
+	service[method](req, res);
+};
+app.get('/api/ukraine-alerts', withUkraineAlerts('handler'));
+app.get('/api/ukraine-alerts/history', withUkraineAlerts('historyHandler'));
+
 // debugging
 if (process.env?.DIST === '1') {
 	// distribution
@@ -183,10 +201,20 @@ const server = app.listen(port, () => {
 });
 
 // graceful shutdown
-const gracefulShutdown = () => {
+const gracefulShutdown = async () => {
+	// save alert history before exiting
+	try {
+		const service = await ukraineAlerts;
+		await service?.stop();
+	} catch (e) {
+		console.error('ukraine-alerts stop failed', e);
+	}
 	server.close(() => {
 		console.log('Server closed');
+		process.exit(0);
 	});
+	// open SSE connections can keep close() waiting
+	setTimeout(() => process.exit(0), 2000).unref();
 };
 
 process.on('SIGINT', gracefulShutdown);

@@ -1,6 +1,104 @@
 [![build-docker](https://github.com/mwood77/ws4kp-international/actions/workflows/build-docker.yaml/badge.svg)](https://github.com/mwood77/ws4kp-international/actions/workflows/build-docker.yaml)
 [![pages-build-deployment](https://github.com/mwood77/ws4kp-international/actions/workflows/pages/pages-build-deployment/badge.svg)](https://github.com/mwood77/ws4kp-international/actions/workflows/pages/pages-build-deployment)
 
+# AirWeather: WeatherStar 4000+ for Ukraine, with air raid alerts
+
+AirWeather is a fork of [`mwood77/ws4kp-international`](https://github.com/mwood77/ws4kp-international) (Open-Meteo weather, works outside the USA). It adds air raid alert screens for Ukraine in the WeatherStar style, made for a CRT or a TV.
+
+### What it adds
+* **Air Raid Alerts screen** (`server/scripts/modules/ukraine-alerts.mjs`)
+  * Screen 1 shows the whole country. Screen 2 zooms to the oblasts you follow and shows raion borders.
+  * Alerted **raions and hromadas are drawn as their real shapes**, so a partial oblast shows exactly which areas are under alert.
+  * Colours:
+    * Red: air raid
+    * Amber: threat (yellow level)
+    * Orange: artillery
+    * Purple: urban fights
+    * Lime: chemical or nuclear
+  * The side panel lists active oblasts with their alert duration and **threat types** (Ballistic, Drones, MiG-31K…), when a threat source is configured.
+* **Warning interrupt.** When an oblast you follow gets a new or stronger alert:
+  * the rotation jumps straight to the zoomed alert screen
+  * a blinking "Air Raid Alert: Kyiv" banner appears
+  * an optional two-tone alarm plays
+
+  A green "All Clear" banner follows when the alert ends. Settings live under "Air Raid Alert Regions": the interrupt itself, the tone, and a 22:00–07:00 tone mute.
+* **Alert History screen** (`ukraine-alert-history.mjs`)
+  * A 24 h timeline for each followed oblast, with alert count and total time.
+  * With no oblasts followed, it shows the busiest oblasts instead.
+  * Hatched grey marks time the server has no data for.
+* **Ticker lines** in the bottom crawl, e.g. "Air Raid: Kyiv City, Kyiv", "Ballistic: Kyiv", "4 UAV > Kyiv".
+* **Oblast picker** in the "Air Raid Alert Regions" section below the display. You can also set it in the URL: `?ukraineAlertRegions=14,31`.
+* **Resilience:** the alert screens and ticker keep working when the weather API is down.
+* **Kiosk mode** (`?kiosk=true`) hides everything but the display.
+
+### Data sources
+All data is fetched **by this app's server** (`src/ukraine-alerts/`) and cached in memory. Every open screen shares one upstream poll, and the browser only calls `/api/ukraine-alerts*`.
+
+| Data | Source | Notes |
+|---|---|---|
+| Alerts (preferred) | [api.ukrainealarm.com](https://api.ukrainealarm.com/) | Free key from their site, set as `UKRAINEALARM_API_KEY`. Polls `/alerts/status`, which is cheap, then `/alerts` only when something changed. |
+| Alerts (fallback) | `map.ukrainealarm.com/api/v2/data/mapUpdate` | No key needed, but undocumented and may change. Polled at most every 20 s. Used when there is no key or the official API fails. |
+| Threat types | [alerts.in.ua](https://devs.alerts.in.ua/) | Optional, set `ALERTS_IN_UA_TOKEN` (request a token at https://alerts.in.ua/api-request). Polled every 30 s with `If-Modified-Since`. Without it, threat types come only from ukrainealarm `reason` texts, which are often empty. |
+| History backfill | `map.ukrainealarm.com/api/data/lastAlerts/{oblast}` | The last 20 alarms per followed oblast, refreshed at most every 10 min. Everything after that comes from the server's own recording. |
+| Flying targets | [war-monitor.org](https://map.war-monitor.org/) | **Off by default.** The public map is protected by a human check, and AirWeather does not get around it. Enabled only with an operator-granted key (`WARMONITOR_API_KEY`; ask war_monitor@proton.me). |
+| Boundaries | [OCHA COD-AB Ukraine](https://data.humdata.org/dataset/cod-ab-ukr) | Oblasts, raions and hromadas, licence CC BY-IGO. Simplified copies are in `tools/data/`. |
+
+Because the upstreams send no CORS headers, alerts **need the Node server**. The static GitHub Pages build (`docs/`) skips the alert screens.
+
+### Environment variables
+| Variable | Default | |
+|---|---|---|
+| `UKRAINEALARM_API_KEY` | – | Official ukrainealarm key |
+| `UKRAINE_ALERTS_PROVIDER` | `auto` | `auto` uses official when a key is set and falls back to mapUpdate. `official` or `mapupdate` forces one source. |
+| `ALERTS_IN_UA_TOKEN` | – | Adds threat types |
+| `WARMONITOR_API_KEY` | – | Turns on the flying-targets layer |
+| `UKRAINE_ALERTS_HISTORY_FILE` | `data/ukraine-alerts-history.json` | Where the recorded history is saved (keeps 48 h) |
+| `UKRAINE_ALERTS_ALWAYS_POLL` | – | `1` keeps polling and recording history even when no screen is open. Without it, polling pauses 5 minutes after the last screen closes. |
+| `UKRAINE_ALERTS_FIXTURE` | – | Serve canned data from a JSON file instead of live data (see `test/fixtures/`). The file holds `alerts`, plus optional `threats`, `targets`, `history` and `historyGaps`. |
+| `UKRAINE_ALERTS_USER_AGENT` | `AirWeather/1.0` | User-Agent sent upstream |
+| `WS4KP_PORT` | `8080` | HTTP port |
+
+### Run
+```bash
+npm install
+UKRAINEALARM_API_KEY=xxxx ALERTS_IN_UA_TOKEN=yyyy UKRAINE_ALERTS_ALWAYS_POLL=1 npm start   # http://localhost:8080
+# or with Docker (the volume keeps the alert history across restarts)
+docker build -t airweather .
+docker run -p 8080:8080 -v airweather-data:/app/data -e UKRAINEALARM_API_KEY=xxxx -e UKRAINE_ALERTS_ALWAYS_POLL=1 airweather
+# try every screen with canned alerts, threats, history and targets
+UKRAINE_ALERTS_FIXTURE=test/fixtures/ukraine-alerts-full.json npm start
+```
+
+### CRT and TV URLs
+The location is passed in the URL, so a kiosk starts without typing anything. In the examples below Kyiv is the weather location, and the followed oblasts are Kyiv Oblast (14) and Kyiv City (31).
+
+```
+CRT (4:3):  http://<server>:8080/?kiosk=true&settings-scanLines-checkbox=true&ukraineAlertRegions=14,31&latLonQuery=Kyiv%2C%20UKR&latLon=%7B%22lat%22%3A50.45%2C%22lon%22%3A30.52%7D
+TV (16:9):  same, plus &settings-wide-checkbox=true
+Alarm tone: add &settings-alertTone-checkbox=true   (night mute: settings-alertNightMute-checkbox=false to disable)
+```
+* To hide a screen, add `&<display>-checkbox=false`, e.g. `radar-checkbox=false` or `ukraine-alert-history-checkbox=false`.
+* Raspberry Pi kiosk: `chromium-browser --kiosk --autoplay-policy=no-user-gesture-required --noerrdialogs --disable-infobars "<url>"`. The autoplay flag is required for the alarm tone. On a CRT, set the Pi's composite output to 640×480 (NTSC/PAL) in `config.txt`.
+* The interrupt and tone only react to oblasts you follow.
+
+### Radar in Ukraine
+The Local Radar screen uses RainViewer. Its free feed has **no coverage for most of Ukraine**: the coverage mask is empty over Kyiv, Kharkiv, Dnipro, Odesa, Vinnytsia and Zaporizhzhia. Only areas near the borders (Lviv, Lutsk, Chernivtsi, Izmail) are covered, by neighbouring countries' radars. If you're in central or eastern Ukraine, hide it with `radar-checkbox=false`.
+
+<details><summary>Oblast region ids</summary>
+
+Vinnytsia 4, Volyn 8, Luhansk 16, Dnipropetrovsk 9, Donetsk 28, Zhytomyr 10, Zakarpattia 11, Zaporizhzhia 12, Ivano-Frankivsk 13, Kyiv City 31, Kyiv Oblast 14, Kirovohrad 15, Crimea 9999, Lviv 27, Mykolaiv 17, Odesa 18, Poltava 19, Rivne 5, Sumy 20, Ternopil 21, Kharkiv 22, Kherson 23, Khmelnytskyi 3, Cherkasy 24, Chernihiv 25, Chernivtsi 26
+</details>
+
+### Regenerating the maps
+* `node tools/prepare-ocha.mjs` (rarely needed) downloads the OCHA boundaries (~84 MB) and writes simplified `tools/data/ocha-adm{1,2,3}.geojson` with mapshaper.
+* `npm run build:map` matches ukrainealarm districts and communities to OCHA raions and hromadas by Ukrainian name. It uses the region tree snapshot in `tools/data/regions-tree.json`. Renamed areas and ambiguous names are fixed in `MANUAL` in the script. It writes:
+  * `views/partials/ukraine-oblasts-svg.ejs`
+  * `server/scripts/modules/ukraine-alerts/map-data.mjs`
+  * `server/scripts/modules/ukraine-alerts/areas.json` (district/community shapes, ~1.3 MB, loaded once by the browser)
+  * `src/ukraine-alerts/region-parents.json`
+
+---
+
 # WeatherStar 4000+ (International)
 
 <div align="center"> 

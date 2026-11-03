@@ -1,0 +1,841 @@
+{
+ "alerts": [
+  {
+   "regionId": "9999",
+   "regionType": "State",
+   "regionName": "\u0410\u0432\u0442\u043e\u043d\u043e\u043c\u043d\u0430 \u0420\u0435\u0441\u043f\u0443\u0431\u043b\u0456\u043a\u0430 \u041a\u0440\u0438\u043c",
+   "regionEngName": "",
+   "lastUpdate": "2022-12-10T22:22:00Z",
+   "activeAlerts": [
+    {
+     "regionId": "9999",
+     "regionType": "State",
+     "type": "AIR",
+     "lastUpdate": "2022-12-10T22:22:00Z",
+     "activeAlertLevels": [
+      {
+       "alertLevel": "Red",
+       "reason": "",
+       "createdAt": "2022-12-10T22:22:00Z"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "regionId": "1313",
+   "regionType": "Community",
+   "regionName": "\u0412\u043e\u0432\u0447\u0430\u043d\u0441\u044c\u043a\u0430 \u0442\u0435\u0440\u0438\u0442\u043e\u0440\u0456\u0430\u043b\u044c\u043d\u0430 \u0433\u0440\u043e\u043c\u0430\u0434\u0430",
+   "regionEngName": "Vovchanska community",
+   "lastUpdate": "2025-08-01T22:52:43Z",
+   "activeAlerts": [
+    {
+     "regionId": "1313",
+     "regionType": "Community",
+     "type": "ARTILLERY",
+     "lastUpdate": "2024-05-20T09:31:37Z",
+     "activeAlertLevels": [
+      {
+       "alertLevel": "Red",
+       "reason": "",
+       "createdAt": "2024-05-20T09:31:37Z"
+      }
+     ]
+    },
+    {
+     "regionId": "1313",
+     "regionType": "Community",
+     "type": "URBAN_FIGHTS",
+     "lastUpdate": "2024-05-20T09:31:41Z",
+     "activeAlertLevels": [
+      {
+       "alertLevel": "Red",
+       "reason": "",
+       "createdAt": "2024-05-20T09:31:41Z"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "regionId": "1284",
+   "regionType": "Community",
+   "regionName": "\u041b\u0438\u043f\u0435\u0446\u044c\u043a\u0430 \u0442\u0435\u0440\u0438\u0442\u043e\u0440\u0456\u0430\u043b\u044c\u043d\u0430 \u0433\u0440\u043e\u043c\u0430\u0434\u0430",
+   "regionEngName": "Lypetska community",
+   "lastUpdate": "2026-09-08T07:11:48.117135Z",
+   "activeAlerts": [
+    {
+     "regionId": "1284",
+     "regionType": "Community",
+     "type": "AIR",
+     "lastUpdate": "2026-03-10T14:01:38.075992Z",
+     "activeAlertLevels": [
+      {
+       "alertLevel": "Red",
+       "reason": "",
+       "createdAt": "2026-03-10T14:01:38.075992Z"
+      }
+     ]
+    },
+    {
+     "regionId": "1284",
+     "regionType": "Community",
+     "type": "ARTILLERY",
+     "lastUpdate": "2026-09-08T07:11:47.723964Z",
+     "activeAlertLevels": [
+      {
+       "alertLevel": "Red",
+       "reason": "",
+       "createdAt": "2026-09-08T07:11:48.117159Z"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "regionId": "353",
+   "regionType": "Community",
+   "regionName": "\u041f\u043e\u043a\u0440\u043e\u0432\u0441\u044c\u043a\u0430 \u0442\u0435\u0440\u0438\u0442\u043e\u0440\u0456\u0430\u043b\u044c\u043d\u0430 \u0433\u0440\u043e\u043c\u0430\u0434\u0430",
+   "regionEngName": "Pokrovska community",
+   "lastUpdate": "2026-09-17T12:19:54.778698Z",
+   "activeAlerts": [
+    {
+     "regionId": "353",
+     "regionType": "Community",
+     "type": "ARTILLERY",
+     "lastUpdate": "2026-08-29T12:30:13.395705Z",
+     "activeAlertLevels": [
+      {
+       "alertLevel": "Red",
+       "reason": "",
+       "createdAt": "2026-08-29T12:30:13.395705Z"
+      }
+     ]
+    },
+    {
+     "regionId": "353",
+     "regionType": "Community",
+     "type": "AIR",
+     "lastUpdate": "2026-09-17T12:19:54.710441Z",
+     "activeAlertLevels": [
+      {
+       "alertLevel": "Yellow",
+       "reason": "",
+       "createdAt": "2026-09-17T10:06:09.751296Z"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "regionId": "356",
+   "regionType": "Community",
+   "regionName": "\u0427\u0435\u0440\u0432\u043e\u043d\u043e\u0433\u0440\u0438\u0433\u043e\u0440\u0456\u0432\u0441\u044c\u043a\u0430 \u0442\u0435\u0440\u0438\u0442\u043e\u0440\u0456\u0430\u043b\u044c\u043d\u0430 \u0433\u0440\u043e\u043c\u0430\u0434\u0430",
+   "regionEngName": "Chervonohryhorivska community",
+   "lastUpdate": "2026-09-17T12:19:38.579629Z",
+   "activeAlerts": [
+    {
+     "regionId": "356",
+     "regionType": "Community",
+     "type": "ARTILLERY",
+     "lastUpdate": "2026-09-07T07:26:01.389455Z",
+     "activeAlertLevels": [
+      {
+       "alertLevel": "Red",
+       "reason": "",
+       "createdAt": "2026-09-07T07:26:02.439064Z"
+      }
+     ]
+    },
+    {
+     "regionId": "356",
+     "regionType": "Community",
+     "type": "AIR",
+     "lastUpdate": "2026-09-17T12:19:38.012378Z",
+     "activeAlertLevels": [
+      {
+       "alertLevel": "Yellow",
+       "reason": "",
+       "createdAt": "2026-09-17T10:06:55.083779Z"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "regionId": "16",
+   "regionType": "State",
+   "regionName": "\u041b\u0443\u0433\u0430\u043d\u0441\u044c\u043a\u0430 \u043e\u0431\u043b\u0430\u0441\u0442\u044c",
+   "regionEngName": "Luhanska region",
+   "lastUpdate": "2026-11-01T22:11:31.5825Z",
+   "activeAlerts": [
+    {
+     "regionId": "16",
+     "regionType": "State",
+     "type": "AIR",
+     "lastUpdate": "2026-11-02T02:06:27.934655Z",
+     "activeAlertLevels": [
+      {
+       "alertLevel": "Red",
+       "reason": "",
+       "createdAt": "2026-11-01T22:11:31.582527Z"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "regionId": "54",
+   "regionType": "District",
+   "regionName": "\u0411\u0430\u0445\u043c\u0443\u0442\u0441\u044c\u043a\u0438\u0439 \u0440\u0430\u0439\u043e\u043d",
+   "regionEngName": "Bakhmutskyi district",
+   "lastUpdate": "2026-11-01T22:36:09.838242Z",
+   "activeAlerts": [
+    {
+     "regionId": "54",
+     "regionType": "District",
+     "type": "AIR",
+     "lastUpdate": "2026-11-01T22:36:09.217164Z",
+     "activeAlertLevels": [
+      {
+       "alertLevel": "Red",
+       "reason": "",
+       "createdAt": "2026-11-01T22:36:09.838607Z"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "regionId": "52",
+   "regionType": "District",
+   "regionName": "\u041c\u0430\u0440\u0456\u0443\u043f\u043e\u043b\u044c\u0441\u044c\u043a\u0438\u0439 \u0440\u0430\u0439\u043e\u043d",
+   "regionEngName": "Mariupolskyi district",
+   "lastUpdate": "2026-11-01T22:36:09.838242Z",
+   "activeAlerts": [
+    {
+     "regionId": "52",
+     "regionType": "District",
+     "type": "AIR",
+     "lastUpdate": "2026-11-01T22:36:09.341206Z",
+     "activeAlertLevels": [
+      {
+       "alertLevel": "Red",
+       "reason": "",
+       "createdAt": "2026-11-01T22:36:09.963212Z"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "regionId": "53",
+   "regionType": "District",
+   "regionName": "\u0414\u043e\u043d\u0435\u0446\u044c\u043a\u0438\u0439 \u0440\u0430\u0439\u043e\u043d",
+   "regionEngName": "Donetskyi district",
+   "lastUpdate": "2026-11-01T22:36:09.838242Z",
+   "activeAlerts": [
+    {
+     "regionId": "53",
+     "regionType": "District",
+     "type": "AIR",
+     "lastUpdate": "2026-11-01T22:36:09.51052Z",
+     "activeAlertLevels": [
+      {
+       "alertLevel": "Red",
+       "reason": "",
+       "createdAt": "2026-11-01T22:36:10.067612Z"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "regionId": "51",
+   "regionType": "District",
+   "regionName": "\u0413\u043e\u0440\u043b\u0456\u0432\u0441\u044c\u043a\u0438\u0439 \u0440\u0430\u0439\u043e\u043d",
+   "regionEngName": "Horlivskyi district",
+   "lastUpdate": "2026-11-01T22:36:09.838242Z",
+   "activeAlerts": [
+    {
+     "regionId": "51",
+     "regionType": "District",
+     "type": "AIR",
+     "lastUpdate": "2026-11-01T22:36:09.51053Z",
+     "activeAlertLevels": [
+      {
+       "alertLevel": "Red",
+       "reason": "",
+       "createdAt": "2026-11-01T22:36:10.124199Z"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "regionId": "49",
+   "regionType": "District",
+   "regionName": "\u041a\u0430\u043b\u044c\u043c\u0456\u0443\u0441\u044c\u043a\u0438\u0439 \u0440\u0430\u0439\u043e\u043d",
+   "regionEngName": "Kalmiuskyi district",
+   "lastUpdate": "2026-11-01T22:36:09.841845Z",
+   "activeAlerts": [
+    {
+     "regionId": "49",
+     "regionType": "District",
+     "type": "AIR",
+     "lastUpdate": "2026-11-01T22:36:09.223215Z",
+     "activeAlertLevels": [
+      {
+       "alertLevel": "Red",
+       "reason": "",
+       "createdAt": "2026-11-01T22:36:09.841883Z"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "regionId": "55",
+   "regionType": "District",
+   "regionName": "\u0412\u043e\u043b\u043d\u043e\u0432\u0430\u0441\u044c\u043a\u0438\u0439 \u0440\u0430\u0439\u043e\u043d",
+   "regionEngName": "Volnovaskyi district",
+   "lastUpdate": "2026-11-01T22:36:09.841845Z",
+   "activeAlerts": [
+    {
+     "regionId": "55",
+     "regionType": "District",
+     "type": "AIR",
+     "lastUpdate": "2026-11-01T22:36:09.510509Z",
+     "activeAlertLevels": [
+      {
+       "alertLevel": "Red",
+       "reason": "",
+       "createdAt": "2026-11-01T22:36:09.959707Z"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "regionId": "56",
+   "regionType": "District",
+   "regionName": "\u041f\u043e\u043a\u0440\u043e\u0432\u0441\u044c\u043a\u0438\u0439 \u0440\u0430\u0439\u043e\u043d",
+   "regionEngName": "Pokrovskyi district",
+   "lastUpdate": "2026-11-01T22:36:09.841845Z",
+   "activeAlerts": [
+    {
+     "regionId": "56",
+     "regionType": "District",
+     "type": "AIR",
+     "lastUpdate": "2026-11-01T22:36:09.510526Z",
+     "activeAlertLevels": [
+      {
+       "alertLevel": "Red",
+       "reason": "",
+       "createdAt": "2026-11-01T22:36:10.083714Z"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "regionId": "50",
+   "regionType": "District",
+   "regionName": "\u041a\u0440\u0430\u043c\u0430\u0442\u043e\u0440\u0441\u044c\u043a\u0438\u0439 \u0440\u0430\u0439\u043e\u043d",
+   "regionEngName": "Kramatorskyi district",
+   "lastUpdate": "2026-11-01T22:36:09.841845Z",
+   "activeAlerts": [
+    {
+     "regionId": "50",
+     "regionType": "District",
+     "type": "AIR",
+     "lastUpdate": "2026-11-01T22:36:09.510535Z",
+     "activeAlertLevels": [
+      {
+       "alertLevel": "Red",
+       "reason": "",
+       "createdAt": "2026-11-01T22:36:10.144103Z"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "regionId": "48",
+   "regionType": "District",
+   "regionName": "\u0421\u0438\u043d\u0435\u043b\u044c\u043d\u0438\u043a\u0456\u0432\u0441\u044c\u043a\u0438\u0439 \u0440\u0430\u0439\u043e\u043d",
+   "regionEngName": "Synelnykivskyi district",
+   "lastUpdate": "2026-11-02T16:30:51.908887Z",
+   "activeAlerts": [
+    {
+     "regionId": "48",
+     "regionType": "District",
+     "type": "AIR",
+     "lastUpdate": "2026-11-02T16:30:51.732788Z",
+     "activeAlertLevels": [
+      {
+       "alertLevel": "Red",
+       "reason": "",
+       "createdAt": "2026-11-02T16:30:51.90895Z"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "regionId": "149",
+   "regionType": "District",
+   "regionName": "\u0417\u0430\u043f\u043e\u0440\u0456\u0437\u044c\u043a\u0438\u0439 \u0440\u0430\u0439\u043e\u043d",
+   "regionEngName": "Zaporizkyi district",
+   "lastUpdate": "2026-11-03T10:20:38.931813Z",
+   "activeAlerts": [
+    {
+     "regionId": "149",
+     "regionType": "District",
+     "type": "AIR",
+     "lastUpdate": "2026-11-03T10:20:38.541695Z",
+     "activeAlertLevels": [
+      {
+       "alertLevel": "Red",
+       "reason": "",
+       "createdAt": "2026-11-03T00:15:24.795955Z"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "regionId": "146",
+   "regionType": "District",
+   "regionName": "\u0412\u0430\u0441\u0438\u043b\u0456\u0432\u0441\u044c\u043a\u0438\u0439 \u0440\u0430\u0439\u043e\u043d",
+   "regionEngName": "Vasylivskyi district",
+   "lastUpdate": "2026-11-03T10:20:38.931813Z",
+   "activeAlerts": [
+    {
+     "regionId": "146",
+     "regionType": "District",
+     "type": "AIR",
+     "lastUpdate": "2026-11-03T10:20:38.628447Z",
+     "activeAlertLevels": [
+      {
+       "alertLevel": "Red",
+       "reason": "",
+       "createdAt": "2026-11-03T00:15:24.916814Z"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "regionId": "145",
+   "regionType": "District",
+   "regionName": "\u041f\u043e\u043b\u043e\u0433\u0456\u0432\u0441\u044c\u043a\u0438\u0439 \u0440\u0430\u0439\u043e\u043d",
+   "regionEngName": "Polohivskyi district",
+   "lastUpdate": "2026-11-03T10:20:38.931813Z",
+   "activeAlerts": [
+    {
+     "regionId": "145",
+     "regionType": "District",
+     "type": "AIR",
+     "lastUpdate": "2026-11-03T10:20:38.537247Z",
+     "activeAlertLevels": [
+      {
+       "alertLevel": "Red",
+       "reason": "",
+       "createdAt": "2026-11-03T00:15:24.794094Z"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "regionId": "148",
+   "regionType": "District",
+   "regionName": "\u041c\u0435\u043b\u0456\u0442\u043e\u043f\u043e\u043b\u044c\u0441\u044c\u043a\u0438\u0439 \u0440\u0430\u0439\u043e\u043d",
+   "regionEngName": "Melitopolskyi district",
+   "lastUpdate": "2026-11-03T10:20:38.931813Z",
+   "activeAlerts": [
+    {
+     "regionId": "148",
+     "regionType": "District",
+     "type": "AIR",
+     "lastUpdate": "2026-11-03T10:20:38.527461Z",
+     "activeAlertLevels": [
+      {
+       "alertLevel": "Red",
+       "reason": "",
+       "createdAt": "2026-11-03T00:15:24.865882Z"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "regionId": "147",
+   "regionType": "District",
+   "regionName": "\u0411\u0435\u0440\u0434\u044f\u043d\u0441\u044c\u043a\u0438\u0439 \u0440\u0430\u0439\u043e\u043d",
+   "regionEngName": "Berdianskyi district",
+   "lastUpdate": "2026-11-03T10:20:38.931813Z",
+   "activeAlerts": [
+    {
+     "regionId": "147",
+     "regionType": "District",
+     "type": "AIR",
+     "lastUpdate": "2026-11-03T10:20:38.628434Z",
+     "activeAlertLevels": [
+      {
+       "alertLevel": "Red",
+       "reason": "",
+       "createdAt": "2026-11-03T00:15:24.91638Z"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "regionId": "564",
+   "regionType": "State",
+   "regionName": "\u043c. \u0417\u0430\u043f\u043e\u0440\u0456\u0436\u0436\u044f \u0442\u0430 \u0417\u0430\u043f\u043e\u0440\u0456\u0437\u044c\u043a\u0430 \u0442\u0435\u0440\u0438\u0442\u043e\u0440\u0456\u0430\u043b\u044c\u043d\u0430 \u0433\u0440\u043e\u043c\u0430\u0434\u0430",
+   "regionEngName": "Zaporizhzhia and Zaporizka community",
+   "lastUpdate": "2026-11-03T09:13:41.882303Z",
+   "activeAlerts": [
+    {
+     "regionId": "564",
+     "regionType": "State",
+     "type": "AIR",
+     "lastUpdate": "2026-11-03T09:13:41.733875Z",
+     "activeAlertLevels": [
+      {
+       "alertLevel": "Yellow",
+       "reason": "",
+       "createdAt": "2026-11-03T00:47:45.636601Z"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "regionId": "351",
+   "regionType": "Community",
+   "regionName": "\u043c. \u041d\u0456\u043a\u043e\u043f\u043e\u043b\u044c \u0442\u0430 \u041d\u0456\u043a\u043e\u043f\u043e\u043b\u044c\u0441\u044c\u043a\u0430 \u0442\u0435\u0440\u0438\u0442\u043e\u0440\u0456\u0430\u043b\u044c\u043d\u0430 \u0433\u0440\u043e\u043c\u0430\u0434\u0430",
+   "regionEngName": "Nikopol and Nikopolska community",
+   "lastUpdate": "2026-11-03T10:26:28.796702Z",
+   "activeAlerts": [
+    {
+     "regionId": "351",
+     "regionType": "Community",
+     "type": "AIR",
+     "lastUpdate": "2026-11-03T06:00:11.811611Z",
+     "activeAlertLevels": [
+      {
+       "alertLevel": "Red",
+       "reason": "",
+       "createdAt": "2026-11-03T06:00:12.133937Z"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "regionId": "349",
+   "regionType": "Community",
+   "regionName": "\u043c. \u041c\u0430\u0440\u0433\u0430\u043d\u0435\u0446\u044c \u0442\u0430 \u041c\u0430\u0440\u0433\u0430\u043d\u0435\u0446\u044c\u043a\u0430 \u0442\u0435\u0440\u0438\u0442\u043e\u0440\u0456\u0430\u043b\u044c\u043d\u0430 \u0433\u0440\u043e\u043c\u0430\u0434\u0430",
+   "regionEngName": "Marhanets and Marhanetska community",
+   "lastUpdate": "2026-11-03T06:38:45.580988Z",
+   "activeAlerts": [
+    {
+     "regionId": "349",
+     "regionType": "Community",
+     "type": "ARTILLERY",
+     "lastUpdate": "2026-11-03T06:38:45.43074Z",
+     "activeAlertLevels": [
+      {
+       "alertLevel": "Red",
+       "reason": "",
+       "createdAt": "2026-11-03T06:38:45.581031Z"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "regionId": "109",
+   "regionType": "District",
+   "regionName": "\u041f\u043e\u043b\u0442\u0430\u0432\u0441\u044c\u043a\u0438\u0439 \u0440\u0430\u0439\u043e\u043d",
+   "regionEngName": "Poltavskyi district",
+   "lastUpdate": "2026-11-03T09:51:52.157807Z",
+   "activeAlerts": [
+    {
+     "regionId": "109",
+     "regionType": "District",
+     "type": "AIR",
+     "lastUpdate": "2026-11-03T09:51:51.912715Z",
+     "activeAlertLevels": [
+      {
+       "alertLevel": "Yellow",
+       "reason": "",
+       "createdAt": "2026-11-03T09:51:52.157919Z"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "regionId": "108",
+   "regionType": "District",
+   "regionName": "\u041c\u0438\u0440\u0433\u043e\u0440\u043e\u0434\u0441\u044c\u043a\u0438\u0439 \u0440\u0430\u0439\u043e\u043d",
+   "regionEngName": "Myrhorodskyi district",
+   "lastUpdate": "2026-11-03T10:04:29.535369Z",
+   "activeAlerts": [
+    {
+     "regionId": "108",
+     "regionType": "District",
+     "type": "AIR",
+     "lastUpdate": "2026-11-03T10:04:29.219243Z",
+     "activeAlertLevels": [
+      {
+       "alertLevel": "Yellow",
+       "reason": "",
+       "createdAt": "2026-11-03T10:04:29.535399Z"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "regionId": "106",
+   "regionType": "District",
+   "regionName": "\u041b\u0443\u0431\u0435\u043d\u0441\u044c\u043a\u0438\u0439 \u0440\u0430\u0439\u043e\u043d",
+   "regionEngName": "Lubenskyi district",
+   "lastUpdate": "2026-11-03T10:11:58.695533Z",
+   "activeAlerts": [
+    {
+     "regionId": "106",
+     "regionType": "District",
+     "type": "AIR",
+     "lastUpdate": "2026-11-03T10:11:58.493281Z",
+     "activeAlertLevels": [
+      {
+       "alertLevel": "Yellow",
+       "reason": "",
+       "createdAt": "2026-11-03T10:11:58.695587Z"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "regionId": "98",
+   "regionType": "District",
+   "regionName": "\u041c\u0438\u043a\u043e\u043b\u0430\u0457\u0432\u0441\u044c\u043a\u0438\u0439 \u0440\u0430\u0439\u043e\u043d",
+   "regionEngName": "Mykolaivskyi district",
+   "lastUpdate": "2026-11-03T10:21:03.243021Z",
+   "activeAlerts": [
+    {
+     "regionId": "98",
+     "regionType": "District",
+     "type": "AIR",
+     "lastUpdate": "2026-11-03T10:21:03.16801Z",
+     "activeAlertLevels": [
+      {
+       "alertLevel": "Yellow",
+       "reason": "",
+       "createdAt": "2026-11-03T10:21:03.24307Z"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "regionId": "14",
+   "regionType": "State",
+   "regionEngName": "Kyivska region",
+   "lastUpdate": "2026-11-03T08:15:00Z",
+   "activeAlerts": [
+    {
+     "regionId": "14",
+     "regionType": "State",
+     "type": "AIR",
+     "lastUpdate": "2026-11-03T08:15:00Z",
+     "activeAlertLevels": [
+      {
+       "alertLevel": "Red",
+       "reason": "",
+       "createdAt": "2026-11-03T08:15:00Z"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "regionId": "31",
+   "regionType": "State",
+   "regionEngName": "Kyiv city",
+   "lastUpdate": "2026-11-03T09:40:00Z",
+   "activeAlerts": [
+    {
+     "regionId": "31",
+     "regionType": "State",
+     "type": "AIR",
+     "lastUpdate": "2026-11-03T09:40:00Z",
+     "activeAlertLevels": [
+      {
+       "alertLevel": "Red",
+       "reason": "",
+       "createdAt": "2026-11-03T09:40:00Z"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "regionId": "27",
+   "regionType": "State",
+   "regionEngName": "Lvivska region",
+   "lastUpdate": "2026-11-03T10:05:00Z",
+   "activeAlerts": [
+    {
+     "regionId": "27",
+     "regionType": "State",
+     "type": "AIR",
+     "lastUpdate": "2026-11-03T10:05:00Z",
+     "activeAlertLevels": [
+      {
+       "alertLevel": "Yellow",
+       "reason": "",
+       "createdAt": "2026-11-03T10:05:00Z"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "regionId": "26",
+   "regionType": "State",
+   "regionEngName": "Chernivetska region",
+   "lastUpdate": "2026-11-03T10:20:00Z",
+   "activeAlerts": [
+    {
+     "regionId": "26",
+     "regionType": "State",
+     "type": "CHEMICAL",
+     "lastUpdate": "2026-11-03T10:20:00Z",
+     "activeAlertLevels": [
+      {
+       "alertLevel": "Red",
+       "reason": "",
+       "createdAt": "2026-11-03T10:20:00Z"
+      }
+     ]
+    }
+   ]
+  }
+ ],
+ "targets": [
+  {
+   "id": "kyiv-probe",
+   "type": "uav.geran_2",
+   "lat": 50.4501,
+   "lon": 30.5234,
+   "n": 1,
+   "heading": 0,
+   "place": "Kyiv",
+   "source": "fixture"
+  },
+  {
+   "id": "shahed-group",
+   "type": "uav.geran_2",
+   "lat": 49.44,
+   "lon": 32.06,
+   "n": 4,
+   "heading": 300,
+   "place": "Cherkasy",
+   "status": "",
+   "trail": [
+    [
+     48.6,
+     33.6,
+     ""
+    ],
+    [
+     48.95,
+     32.9,
+     ""
+    ],
+    [
+     49.2,
+     32.5,
+     ""
+    ]
+   ],
+   "dest": {
+    "lat": 50.45,
+    "lon": 30.52,
+    "place": "Kyiv"
+   }
+  },
+  {
+   "id": "jet",
+   "type": "uav.geran_3",
+   "lat": 47.9,
+   "lon": 35.2,
+   "n": 1,
+   "heading": 20,
+   "place": "Zaporizhzhia"
+  },
+  {
+   "id": "cruise-1",
+   "type": "cruise.kh101",
+   "lat": 49.23,
+   "lon": 28.47,
+   "n": 2,
+   "heading": 290,
+   "place": "Vinnytsia",
+   "trail": [
+    [
+     48.4,
+     31.0,
+     ""
+    ],
+    [
+     48.9,
+     29.8,
+     ""
+    ]
+   ],
+   "dest": {
+    "lat": 49.84,
+    "lon": 24.03,
+    "place": "Lviv"
+   }
+  },
+  {
+   "id": "ballistic-1",
+   "type": "ballistic.iskander_m",
+   "lat": 49.99,
+   "lon": 36.23,
+   "n": 1,
+   "heading": 270,
+   "place": "Kharkiv"
+  },
+  {
+   "id": "stale-uav",
+   "type": "uav.unknown",
+   "lat": 51.5,
+   "lon": 31.3,
+   "n": 1,
+   "heading": 180,
+   "status": "stale",
+   "place": "Chernihiv"
+  },
+  {
+   "id": "kab-1",
+   "type": "kab",
+   "lat": 50.9,
+   "lon": 34.8,
+   "n": 3,
+   "heading": 220,
+   "place": "Sumy"
+  }
+ ]
+}

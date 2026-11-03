@@ -1,0 +1,13 @@
+<%- include('header.ejs', {titleDual:{ top: 'Alert' , bottom: 'History' }, hasTime: true }) %>
+	<div class="main has-scroll ukraine-alert-history">
+		<div class="history-title"></div>
+		<div class="history-rows"></div>
+		<div class="axis"></div>
+		<div class="legend">
+			<span><span class="swatch full-red"></span>Alert</span>
+			<span><span class="swatch full-yellow"></span>Threat</span>
+			<span><span class="swatch partial-red"></span>Part</span>
+			<span><span class="swatch gap"></span>No data</span>
+		</div>
+	</div>
+	<%- include('scroll.ejs') %>

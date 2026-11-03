@@ -1,0 +1,489 @@
+@use 'shared/_colors'as c;
+@use 'shared/_utils'as u;
+
+// alert palette (kept bright and saturated so it survives a composite CRT)
+$land: #2c2f9c;
+$land-dim: #1c1f6a;
+$border: #8fa8ff;
+$alert-air: #e8261c;
+$alert-yellow: #e0a800;
+$alert-artillery: #ff7f11;
+$alert-urban: #b04ad8;
+$alert-chem: #c6e000;
+
+#ukraine-alerts-html.weather-display {
+	background-image: url('../images/BackGround5_1.png');
+}
+
+.weather-display .main.ukraine-alerts {
+	position: relative;
+
+	.map-frame {
+		position: absolute;
+		left: 12px;
+		top: 4px;
+		// must match FRAME in ukraine-alerts.mjs
+		width: 435px;
+		height: 285px;
+
+		svg.ukraine-map {
+			width: 435px;
+			height: 285px;
+			display: block;
+		}
+
+		.legend {
+			position: absolute;
+			left: 0;
+			bottom: 0;
+			padding: 2px 4px;
+			background: rgba(0, 0, 40, 0.65);
+			font-family: 'Star4000 Small';
+			font-size: 14pt;
+			display: grid;
+			grid-template-columns: auto auto;
+			column-gap: 8px;
+			line-height: 16px;
+			@include u.text-shadow(1px, 1px);
+
+			.swatch {
+				display: inline-block;
+				width: 10px;
+				height: 10px;
+				margin-right: 4px;
+				border: 1px solid #000;
+
+				&.alert-air { background: $alert-air; }
+				&.alert-yellow { background: $alert-yellow; }
+				&.alert-artillery { background: $alert-artillery; }
+				&.alert-urban { background: $alert-urban; }
+				&.alert-chem { background: $alert-chem; }
+				&.partial { background: repeating-linear-gradient(45deg, $alert-air 0 3px, $land 3px 6px); }
+			}
+		}
+
+		&.zoomed .legend {
+			display: none;
+		}
+
+		// warning banner (new alert / all clear in followed oblasts)
+		.alert-banner {
+			display: none;
+			position: absolute;
+			left: -12px;
+			right: -193px;
+			top: -4px;
+			padding: 2px 8px;
+			text-align: center;
+			font-family: 'Star4000';
+			font-size: 22pt;
+			color: #ffffff;
+			background: #c00000;
+			border-top: 2px solid #ff8080;
+			border-bottom: 2px solid #600000;
+			@include u.text-shadow(2px, 1px);
+			white-space: nowrap;
+			overflow: hidden;
+			z-index: 5;
+
+			&.show {
+				display: block;
+				animation: ukraine-alert-blink 1s steps(1) infinite;
+			}
+
+			&.clear {
+				background: #007a20;
+				border-top-color: #60ff80;
+				border-bottom-color: #003010;
+				animation: none;
+			}
+		}
+
+		.map-title {
+			position: absolute;
+			left: 4px;
+			top: 2px;
+			font-family: 'Star4000';
+			font-size: 20pt;
+			color: c.$title-color;
+			@include u.text-shadow(2px, 1px);
+		}
+	}
+
+	svg.ukraine-map {
+		.hatch-bg {
+			fill: $land;
+		}
+
+		// alerted districts / communities, drawn over the oblast fills
+		.areas path.area {
+			stroke: rgba(0, 0, 0, 0.35);
+			stroke-width: 0.5px;
+			vector-effect: non-scaling-stroke;
+
+			&.alert-air,
+			&.alert-unknown { fill: $alert-air; }
+			&.alert-yellow { fill: $alert-yellow; }
+			&.alert-artillery { fill: $alert-artillery; }
+			&.alert-urban { fill: $alert-urban; }
+			&.alert-chem { fill: $alert-chem; }
+		}
+
+		// raion borders, zoomed view only
+		.raion-borders path {
+			fill: none;
+			stroke: $border;
+			stroke-opacity: 0.55;
+			stroke-width: 0.7px;
+			stroke-dasharray: 3 2;
+			vector-effect: non-scaling-stroke;
+		}
+
+		// oblast borders on top of everything coloured
+		.oblast-borders path {
+			fill: none;
+			stroke: $border;
+			stroke-width: 1px;
+			stroke-linejoin: round;
+			vector-effect: non-scaling-stroke;
+
+			&.selected {
+				stroke: #ffffff;
+				stroke-width: 2.5px;
+			}
+		}
+
+		path.oblast {
+			fill: $land;
+			stroke: none;
+
+			&.alert-air { fill: $alert-air; }
+			&.alert-unknown { fill: $alert-air; }
+			&.alert-yellow { fill: $alert-yellow; }
+			&.alert-artillery { fill: $alert-artillery; }
+			&.alert-urban { fill: $alert-urban; }
+			&.alert-chem { fill: $alert-chem; }
+
+			&.partial {
+				&.alert-air { fill: url(#hatch-air); }
+				&.alert-unknown { fill: url(#hatch-unknown); }
+				&.alert-yellow { fill: url(#hatch-yellow); }
+				&.alert-artillery { fill: url(#hatch-artillery); }
+				&.alert-urban { fill: url(#hatch-urban); }
+				&.alert-chem { fill: url(#hatch-chem); }
+			}
+
+		}
+
+		// selected oblasts stand out on the zoomed screen
+		&.zoomed.has-selection path.oblast:not(.selected):not(.inside-selected) {
+			opacity: 0.45;
+		}
+
+		// draw selected borders on top of neighbours
+		.labels text {
+			font-family: 'Star4000 Small';
+			fill: #ffffff;
+			text-anchor: middle;
+			dominant-baseline: middle;
+			paint-order: stroke;
+			stroke: #000000;
+			stroke-width: 3px;
+			vector-effect: non-scaling-stroke;
+
+			&.selected {
+				fill: c.$title-color;
+			}
+		}
+
+		.target {
+			.icon {
+				fill: #ffffff;
+				stroke: #000000;
+				stroke-width: 1px;
+				vector-effect: non-scaling-stroke;
+			}
+
+			.trail {
+				fill: none;
+				stroke: #ffffff;
+				stroke-width: 1.5px;
+				stroke-dasharray: 2 3;
+				vector-effect: non-scaling-stroke;
+			}
+
+			.dest {
+				stroke: #ffffff;
+				stroke-opacity: 0.45;
+				stroke-width: 1px;
+				stroke-dasharray: 6 4;
+				vector-effect: non-scaling-stroke;
+			}
+
+			.count {
+				font-family: 'Star4000 Small';
+				fill: #ffffff;
+				paint-order: stroke;
+				stroke: #000000;
+				stroke-width: 3px;
+				vector-effect: non-scaling-stroke;
+			}
+
+			&.target-uav .icon { fill: #ffff00; }
+			&.target-cruise .icon { fill: #00ffff; }
+			&.target-ballistic .icon { fill: #ff40ff; }
+			&.target-aviation .icon { fill: #ffffff; }
+
+			&.stale {
+				opacity: 0.4;
+			}
+		}
+	}
+
+	.side-panel {
+		position: absolute;
+		left: 452px;
+		top: 4px;
+		width: 178px;
+		height: 280px;
+		overflow: hidden;
+		font-family: 'Star4000 Small';
+		font-size: 18pt;
+		@include u.text-shadow(2px, 1px);
+
+		.list-heading {
+			color: c.$title-color;
+			margin-bottom: 2px;
+		}
+
+		.row {
+			display: flex;
+			justify-content: space-between;
+			line-height: 20px;
+
+			&.alert-air,
+			&.alert-unknown { color: #ff5a4a; }
+			&.alert-yellow { color: #ffd23a; }
+			&.alert-artillery { color: #ff9b40; }
+			&.alert-urban { color: #d08cff; }
+			&.alert-chem { color: #e4ff40; }
+			&.clear { color: #80ff80; }
+			&.more { color: #c0c0c0; }
+			&.threat { color: #ffffff; }
+
+			&.sub {
+				font-size: 14pt;
+				line-height: 16px;
+				padding-left: 10px;
+				color: #e0e0ff;
+			}
+
+			.name {
+				white-space: nowrap;
+				overflow: hidden;
+				text-overflow: clip;
+				max-width: 130px;
+			}
+		}
+
+		.target-summary {
+			margin-top: 20px;
+
+			.row {
+				color: #ffff00;
+
+				&.target-cruise { color: #00ffff; }
+				&.target-ballistic { color: #ff40ff; }
+			}
+		}
+
+	}
+
+	.footer {
+		position: absolute;
+		left: 14px;
+		right: 14px;
+		bottom: 0;
+		display: flex;
+		justify-content: space-between;
+		font-family: 'Star4000 Small';
+		font-size: 14pt;
+		color: #c0c0c0;
+		@include u.text-shadow(2px, 1px);
+
+		.stale {
+			color: #ff5a4a;
+		}
+	}
+}
+
+@keyframes ukraine-alert-blink {
+	50% {
+		background: #600000;
+	}
+}
+
+// ticker lines added by ukraine-alerts.mjs
+.weather-display .scroll .fixed .text-content {
+	&.hazard {
+		color: #ff5a4a;
+	}
+
+	&.all-clear {
+		color: #80ff80;
+	}
+}
+
+// oblast picker on the settings page
+#ukraineAlertRegions {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+	max-width: 900px;
+	margin: 0 auto;
+	text-align: left;
+}
+
+// AirWeather: kiosk mode shows only the display (CRT / TV)
+body.kiosk {
+	overflow: hidden;
+	background-color: #000000;
+
+	> *:not(#divTwc) {
+		display: none !important;
+	}
+
+	// keep its layout: navigation.mjs resize() measures its width to scale the display
+	#divTwc #divTwcBottom {
+		visibility: hidden;
+	}
+}
+
+// ---- alert history display ----
+#ukraine-alert-history-html.weather-display {
+	background-image: url('../images/BackGround5_1.png');
+}
+
+.weather-display .main.ukraine-alert-history {
+	position: relative;
+	font-family: 'Star4000 Small';
+	@include u.text-shadow(2px, 1px);
+
+	// must match BAR in ukraine-alert-history.mjs
+	$bar-left: 140px;
+	$bar-width: 380px;
+
+	.history-title {
+		position: absolute;
+		left: 20px;
+		top: 0;
+		font-family: 'Star4000';
+		font-size: 20pt;
+		color: c.$title-color;
+	}
+
+	.history-rows {
+		position: absolute;
+		top: 32px;
+		left: 0;
+		width: 640px;
+	}
+
+	.history-rows.roomy .history-row {
+		height: 44px;
+	}
+
+	.history-row {
+		position: relative;
+		height: 29px;
+		font-size: 18pt;
+
+		.name {
+			position: absolute;
+			left: 20px;
+			top: 4px;
+			width: $bar-left - 26px;
+			overflow: hidden;
+			white-space: nowrap;
+		}
+
+		.bar {
+			position: absolute;
+			left: $bar-left;
+			top: 4px;
+			width: $bar-width;
+			height: 18px;
+			background: $land;
+			border: 1px solid $border;
+			overflow: hidden;
+
+			> div {
+				position: absolute;
+				top: 0;
+				height: 100%;
+			}
+		}
+
+		.stats {
+			position: absolute;
+			left: $bar-left + $bar-width + 10px;
+			top: 4px;
+			width: 100px;
+			color: #ffffff;
+		}
+	}
+
+	.seg.full-red { background: $alert-air; }
+	.seg.full-yellow { background: $alert-yellow; }
+	.seg.partial-red { background: repeating-linear-gradient(45deg, $alert-air 0 3px, $land 3px 6px); }
+	.seg.partial-yellow { background: repeating-linear-gradient(45deg, $alert-yellow 0 3px, $land 3px 6px); }
+	.gap { background: repeating-linear-gradient(45deg, #3a3a50 0 2px, #1a1a28 2px 6px); }
+
+	.axis {
+		position: absolute;
+		top: 268px;
+		left: $bar-left;
+		width: $bar-width;
+		height: 18px;
+		font-size: 14pt;
+		color: #c0c0c0;
+
+		.tick {
+			position: absolute;
+			transform: translateX(-50%);
+
+			&.now {
+				color: c.$title-color;
+			}
+		}
+	}
+
+	.legend {
+		position: absolute;
+		left: $bar-left;
+		bottom: 0;
+		font-size: 14pt;
+		display: flex;
+		gap: 14px;
+
+		.swatch {
+			display: inline-block;
+			width: 12px;
+			height: 10px;
+			margin-right: 4px;
+			border: 1px solid #000;
+
+			&.full-red { background: $alert-air; }
+			&.full-yellow { background: $alert-yellow; }
+			&.partial-red { background: repeating-linear-gradient(45deg, $alert-air 0 3px, $land 3px 6px); }
+			&.gap { background: repeating-linear-gradient(45deg, #3a3a50 0 2px, #1a1a28 2px 6px); }
+		}
+	}
+}
+
+#ukraineAlertSettings {
+	max-width: 900px;
+	margin: 10px auto 0;
+	text-align: left;
+	display: flex;
+	flex-direction: column;
+}

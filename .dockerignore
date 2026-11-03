@@ -1,3 +1,6 @@
 .git/
 Dockerfile
 .vscode/
+# AirWeather: host node_modules and recorded alert history
+node_modules
+data

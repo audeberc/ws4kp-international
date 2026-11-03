@@ -5,6 +5,7 @@
 	"main": "index.js",
 	"scripts": {
 		"test": "echo \"Error: no test specified\" && exit 1",
+		"build:map": "node tools/build-ukraine-map.mjs",
 		"build:css": "sass --style=compressed ./server/styles/scss/main.scss ./server/styles/main.css",
 		"lint": "eslint ./server/scripts/**/*.mjs",
 		"lint:fix": "eslint --fix ./server/scripts/**/*.mjs",
@@ -26,6 +27,7 @@
 	"homepage": "https://github.com/mwood77/ws4kp-international#readme",
 	"devDependencies": {
 		"@aws-sdk/client-cloudfront": "^3.609.0",
+		"d3-geo": "^3.1.2",
 		"del": "^7.1.0",
 		"eslint": "^8.2.0",
 		"eslint-config-airbnb-base": "^15.0.0",
@@ -42,6 +44,7 @@
 		"jquery": "^3.6.0",
 		"jquery-touchswipe": "^1.6.19",
 		"luxon": "^3.0.0",
+		"mapshaper": "^0.6.121",
 		"nodemon": "^3.1.9",
 		"nosleep.js": "^0.12.0",
 		"sass": "^1.54.0",
@@ -53,5 +56,13 @@
 	"dependencies": {
 		"ejs": "^3.1.5",
 		"express": "^4.20.0"
+	},
+	"nodemonConfig": {
+		"ignore": [
+			"data/*",
+			"docs/*",
+			"test/*",
+			"tools/*"
+		]
 	}
 }

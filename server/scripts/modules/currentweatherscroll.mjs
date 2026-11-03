@@ -42,13 +42,43 @@ const incrementInterval = () => {
 };
 
 const drawScreen = async () => {
-	// get the conditions
-	const data = await getCurrentWeather();
+	// get the conditions (don't wait forever: alert lines must show even when weather is down)
+	const data = await Promise.race([
+		getCurrentWeather(),
+		new Promise((resolve) => { setTimeout(() => resolve(undefined), 1500); }),
+	]);
 
-	// nothing to do if there's no data yet
-	if (!data) return;
+	// without weather data only screens added with { independent: true } can be drawn
+	const run = (fxn) => {
+		if (!data && !fxn.independent) return undefined;
+		return fxn(data);
+	};
 
-	drawCondition(screens[screenIndex](data));
+	// screens may return a string, { text, className } or nothing (skip to the next screen)
+	screenIndex %= screens.length;
+	let result = run(screens[screenIndex]);
+	for (let tries = 1; !result && tries < screens.length; tries += 1) {
+		screenIndex = (screenIndex + 1) % screens.length;
+		result = run(screens[screenIndex]);
+	}
+	if (!result) return;
+	if (typeof result === 'string') {
+		drawCondition(result);
+	} else {
+		drawCondition(result.text, result.className);
+	}
+};
+
+// add a screen to the scroll list, used by other displays (e.g. ukraine-alerts)
+// fxn(data) returns a string, { text, className } or a falsy value to be skipped
+// independent: true draws the screen even when no weather data is available
+const addScreen = (fxn, { first = false, independent = false } = {}) => {
+	fxn.independent = independent;
+	if (first) {
+		screens.unshift(fxn);
+	} else {
+		screens.push(fxn);
+	}
 };
 
 // the "screens" are stored in an array for easy addition and removal
@@ -105,7 +135,7 @@ const screens = [
 ];
 
 // internal draw function with preset parameters
-const drawCondition = (text) => {
+const drawCondition = (text, className) => {
 	elemForEach('.weather-display .scroll .fixed', (elem) => {
 		// Remove old text-layers with exit
 		const layers = elem.querySelectorAll('.text-layer');
@@ -122,6 +152,7 @@ const drawCondition = (text) => {
 		newLayer.className = 'text-layer';
 		const content = document.createElement('div');
 		content.className = 'text-content';
+		if (className) content.classList.add(className);
 		content.textContent = text;
 		newLayer.appendChild(content);
 		elem.appendChild(newLayer);
@@ -137,3 +168,8 @@ const drawCondition = (text) => {
 document.addEventListener('DOMContentLoaded', () => {
 	start();
 });
+
+export {
+	// eslint-disable-next-line import/prefer-default-export
+	addScreen,
+};

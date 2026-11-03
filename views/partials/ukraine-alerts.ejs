@@ -1,0 +1,25 @@
+<%- include('header.ejs', {titleDual:{ top: 'Air Raid' , bottom: 'Alerts' }, hasTime: true }) %>
+	<div class="main has-scroll ukraine-alerts">
+		<div class="map-frame">
+			<%- include('ukraine-oblasts-svg.ejs') %>
+			<div class="map-title">Ukraine</div>
+			<div class="alert-banner"></div>
+			<div class="legend">
+				<div><span class="swatch alert-air"></span>Air Raid</div>
+				<div><span class="swatch alert-yellow"></span>Threat</div>
+				<div><span class="swatch alert-artillery"></span>Artillery</div>
+				<div><span class="swatch alert-urban"></span>Fights</div>
+				<div><span class="swatch partial"></span>Partial</div>
+				<div><span class="swatch alert-chem"></span>Chem/Nuc</div>
+			</div>
+		</div>
+		<div class="side-panel">
+			<div class="alert-list"></div>
+			<div class="target-summary"></div>
+		</div>
+		<div class="footer">
+			<span class="update-status"></span>
+			<span class="credits"></span>
+		</div>
+	</div>
+	<%- include('scroll.ejs') %>

@@ -2,3 +2,5 @@ node_modules
 **/debug.log
 server/scripts/custom.js
 .DS_Store
+# AirWeather alert history
+/data/
